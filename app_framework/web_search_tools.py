@@ -1,5 +1,6 @@
 """Herramienta de búsqueda en Wikipedia en español mediante su API REST."""
 
+import json
 import re
 from html import unescape
 from typing import Annotated
@@ -19,7 +20,6 @@ def _fetch_json(url: str) -> dict:
         },
     )
     with urlopen(request, timeout=10) as response:
-        import json
         return json.loads(response.read().decode("utf-8"))
 
 
