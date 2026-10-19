@@ -7,8 +7,8 @@ Repositorio práctico para aprender a construir agentes de IA desde cero.
 - [x] Proyecto 01 — Primer agente + calculadora (implementación manual)
 - [x] Proyecto 01B — El mismo agente con Microsoft Agent Framework
 - [x] Proyecto 02 — Agente con varias herramientas (código añadido; pendiente de prueba local)
-- [ ] Proyecto 03 — Memoria conversacional
-- [ ] Proyecto 04 — Integración con APIs externas
+- [x] Proyecto 03 — Memoria local persistente (código añadido; pendiente de prueba local)
+- [x] Proyecto 04 — API meteorológica Open-Meteo (código añadido; pendiente de prueba local)
 - [ ] Proyecto 05 — Búsqueda web
 - [ ] Proyecto 06 — Planificación y autonomía
 - [ ] Proyecto 07 — Sistema multiagente
@@ -64,3 +64,42 @@ python -m pytest
 ```
 
 La API key de OpenAI debe estar en el archivo local `.env`, nunca en GitHub. El uso de la API puede tener costes separados de la suscripción de ChatGPT.
+
+
+## Proyecto 03 — Memoria local persistente
+
+El agente puede guardar, buscar, listar y borrar recuerdos cuando el usuario lo solicita explícitamente. Los datos se guardan localmente en `data/memory.json`; no se suben al repositorio.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_memory
+```
+
+Pruebas manuales:
+- `Recuerda que estoy aprendiendo Python`
+- `¿Qué recuerdas sobre Python?`
+- `Lista mis recuerdos`
+- `Borra el recuerdo con ID <ID>`
+
+La memoria no es una memoria automática de todas las conversaciones: el agente debe usar las herramientas. No guardes contraseñas, claves API ni datos personales sensibles.
+
+## Proyecto 04 — API externa de meteorología
+
+El agente consulta geocodificación y previsión meteorológica mediante Open-Meteo. No hace falta una clave de Open-Meteo, pero sí la clave de OpenAI configurada en `.env`.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_weather
+```
+
+Ejemplo: `¿Qué tiempo hace en Granada, España?`
+
+La herramienta consulta datos actuales y previsión diaria, establece un timeout y devuelve un mensaje de error si la API no está disponible. Los datos meteorológicos son orientativos y pueden cambiar.
+
+## Pruebas de los proyectos 03 y 04
+
+```powershell
+python -m pytest
+```
