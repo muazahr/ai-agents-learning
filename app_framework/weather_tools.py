@@ -103,7 +103,7 @@ def get_weather(
             lines.append("Probabilidad máxima de precipitación hoy: {} %".format(rain_chance))
         lines.append("Fuente: Open-Meteo. Consulta orientativa; las condiciones pueden cambiar.")
         return "\n".join(lines)
-    except (HTTPError, URLError, TimeoutError, OSError, ValueError, TypeError) as exc:
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, TypeError, AttributeError) as exc:
         return "No se pudo consultar el tiempo ahora mismo ({}). Inténtalo de nuevo más tarde.".format(
             type(exc).__name__
         )
