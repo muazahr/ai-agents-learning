@@ -10,7 +10,7 @@ Repositorio práctico para aprender a construir agentes de IA desde cero.
 - [x] Proyecto 03 — Memoria local persistente (código añadido; pendiente de prueba local)
 - [x] Proyecto 04 — API meteorológica Open-Meteo (código añadido; pendiente de prueba local)
 - [x] Proyecto 05 — Búsqueda en Wikipedia (código añadido; pendiente de prueba local)
-- [ ] Proyecto 06 — Planificación y autonomía
+- [x] Proyecto 06 — Planificación y coordinación de herramientas (código añadido; pendiente de prueba local)
 - [ ] Proyecto 07 — Sistema multiagente
 - [ ] Proyecto 08 — MCP
 - [ ] Proyecto 09 — Evaluación de agentes
@@ -127,3 +127,20 @@ La herramienta no necesita una clave de Wikipedia. La aplicación sigue necesita
 ```powershell
 python -m pytest
 ```
+
+
+## Proyecto 06 — Planificación y coordinación
+
+Este agente recibe objetivos complejos, los divide en pasos y coordina herramientas de cálculo, fecha/hora, meteorología y búsqueda en Wikipedia. En esta versión, las herramientas son de consulta y cálculo: no envía mensajes ni modifica sistemas externos.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_planner
+```
+
+Prueba:
+- `Prepara un resumen con la fecha actual, el tiempo en Granada y dos datos sobre la historia de Granada.`
+- `Calcula 125 * 8 y explica brevemente cómo has obtenido el resultado.`
+
+El agente debe consultar las herramientas correspondientes y distinguir los datos confirmados de las explicaciones. La planificación la realiza el modelo mediante instrucciones; este ejemplo no es un motor de planificación formal ni garantiza un plan perfecto.
