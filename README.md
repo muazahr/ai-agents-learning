@@ -2,42 +2,65 @@
 
 Repositorio práctico para aprender a construir agentes de IA desde cero.
 
-## Proyecto 01 — Primer agente con herramientas
+## Roadmap
 
-Primer proyecto del itinerario: un agente en Python que puede decidir cuándo utilizar una herramienta de cálculo y usar el resultado para responder al usuario.
-
-### Conceptos
-
-- LLM
-- Prompt
-- Herramientas
-- Tool calling
-- Contexto
-- Ejecución de acciones
-
-### Roadmap
-
-- [x] Proyecto 01 — Primer agente + calculadora
-- [x] Comparativa — agente manual frente a Microsoft Agent Framework
-- [ ] Proyecto 02 — Agente con varias herramientas
-- [ ] Proyecto 03 — Memoria
-- [ ] Proyecto 04 — APIs externas
+- [x] Proyecto 01 — Primer agente + calculadora (implementación manual)
+- [x] Proyecto 01B — El mismo agente con Microsoft Agent Framework
+- [x] Proyecto 02 — Agente con varias herramientas (código añadido; pendiente de prueba local)
+- [ ] Proyecto 03 — Memoria conversacional
+- [ ] Proyecto 04 — Integración con APIs externas
 - [ ] Proyecto 05 — Búsqueda web
-- [ ] Proyecto 06 — Agente multi-herramienta
+- [ ] Proyecto 06 — Planificación y autonomía
+- [ ] Proyecto 07 — Sistema multiagente
+- [ ] Proyecto 08 — MCP
+- [ ] Proyecto 09 — Evaluación de agentes
+- [ ] Proyecto final — Despliegue en producción
 
-## Proyecto 01B — El mismo agente con un framework
+## Proyecto 01 — Agente manual con calculadora
 
-Hemos añadido una segunda implementación usando **Microsoft Agent Framework** para comparar el control manual del primer agente con las abstracciones de un framework.
+Primer agente Python con un LLM y una herramienta de cálculo. La implementación manual permite estudiar el ciclo de tool calling paso a paso.
+
+## Proyecto 01B — Microsoft Agent Framework
+
+La segunda implementación permite comparar el control manual con las abstracciones del framework.
 
 - Código: [`app_framework/`](app_framework/)
 - Dependencias: [`requirements-framework.txt`](requirements-framework.txt)
-- Guía detallada: [`explicacion agentes.md`](explicacion%20agentes.md)
+- Guía: [`explicacion agentes.md`](explicacion%20agentes.md)
+- Ejecutar: `python -m app_framework.agent`
 
-### Preparación
+## Proyecto 02 — Agente con varias herramientas
 
-1. Crea/activa tu entorno virtual.
-2. Instala `pip install -r requirements-framework.txt`.
-3. Copia `.env.framework.example` a `.env` y configura `OPENAI_API_KEY`.
-4. Ejecuta `python -m app_framework.agent`.
+El agente combina estas herramientas:
 
-La API key no debe guardarse ni subirse a GitHub. Esta versión usa una API key de OpenAI; no requiere Azure para este ejemplo.
+- `calculate`: realiza operaciones matemáticas.
+- `current_datetime`: consulta la fecha y hora local del equipo.
+- `save_note`: guarda una nota en `data/notes.json`.
+- `list_notes`: muestra los títulos guardados.
+- `get_note`: recupera el contenido de una nota por título.
+
+### Ejecutar
+
+Desde la raíz del repositorio, activa el entorno virtual y ejecuta:
+
+```powershell
+python -m app_framework.agent_multi
+```
+
+Prueba, por ejemplo:
+
+- `¿Cuánto es 125 * 8?`
+- `¿Qué fecha y hora son ahora?`
+- `Guarda una nota titulada Ideas con el contenido: probar un agente con varias herramientas.`
+- `Lista mis notas.`
+- `Recupera la nota Ideas.`
+
+Las notas se almacenan en un archivo local dentro de `data/`. No guardes secretos ni información sensible en las notas.
+
+### Pruebas
+
+```powershell
+python -m pytest
+```
+
+La API key de OpenAI debe estar en el archivo local `.env`, nunca en GitHub. El uso de la API puede tener costes separados de la suscripción de ChatGPT.
