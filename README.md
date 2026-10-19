@@ -18,6 +18,7 @@ Primer proyecto del itinerario: un agente en Python que puede decidir cuándo ut
 ### Roadmap
 
 - [x] Proyecto 01 — Primer agente + calculadora
+- [x] Comparativa — agente manual frente a Microsoft Agent Framework
 - [ ] Proyecto 02 — Agente con varias herramientas
 - [ ] Proyecto 03 — Memoria
 - [ ] Proyecto 04 — APIs externas
@@ -30,7 +31,7 @@ Hemos añadido una segunda implementación usando **Microsoft Agent Framework** 
 
 - Código: [`app_framework/`](app_framework/)
 - Dependencias: [`requirements-framework.txt`](requirements-framework.txt)
-- Guía detallada: [`explicacion agentes.md`](%20explicacion%20agentes.md)
+- Guía detallada: [`explicacion agentes.md`](explicacion%20agentes.md)
 
 ### Preparación
 
