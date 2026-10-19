@@ -935,3 +935,45 @@ python -m pytest
 ```
 
 Las pruebas verifican las reglas del router sin realizar llamadas a la API de OpenAI ni a servicios externos.
+
+
+---
+
+# Herramienta adicional — Agent Builder
+
+## Objetivo
+
+Agent Builder permite crear el esqueleto de un nuevo agente sin copiar archivos manualmente. Es una herramienta de generación de proyectos basada en una plantilla Python, no un LLM que escriba y ejecute código arbitrario.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_builder
+```
+
+El programa pregunta:
+1. El nombre del agente.
+2. El problema u objetivo que resolverá.
+3. Las instrucciones iniciales (opcional).
+
+Después crea una carpeta en `generated_agents/<nombre>` con:
+- `agent.py`: cliente de OpenAI, definición del agente y bucle de consola.
+- `README.md`: objetivo y comando de ejecución.
+- `__init__.py`: paquete Python del agente.
+
+## Seguridad y límites
+
+- El nombre se normaliza a un identificador de carpeta.
+- Se comprueba que el código generado compile sintácticamente.
+- Si ya existe un proyecto con el mismo nombre, no se sobrescribe.
+- El agente generado empieza sin herramientas personalizadas.
+- El código generado no se ejecuta automáticamente.
+- La API key sigue guardándose en el `.env` local, nunca en el código ni en GitHub.
+
+## Pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas comprueban la normalización del nombre, la creación de archivos, la validez sintáctica y la protección contra sobrescrituras.
