@@ -977,3 +977,140 @@ python -m pytest
 ```
 
 Las pruebas comprueban la normalización del nombre, la creación de archivos, la validez sintáctica y la protección contra sobrescrituras.
+
+
+---
+
+# Proyecto 08 — Integración con MCP (Model Context Protocol)
+
+## ¿Qué problema resuelve?
+
+Hasta ahora, las herramientas están declaradas directamente dentro del proyecto del agente. MCP propone un protocolo común para que una aplicación cliente descubra y utilice herramientas que ofrece otro proceso o servidor compatible.
+
+Una comparación sencilla:
+
+- Sin MCP, el agente suele conocer directamente las funciones que puede llamar.
+- Con MCP, el agente puede conectarse a un servidor, consultar qué herramientas publica y solicitar su ejecución mediante un protocolo estándar.
+
+MCP no es un modelo de IA ni reemplaza al LLM. Es una forma de conectar aplicaciones con herramientas y recursos.
+
+## Archivos del proyecto
+
+- `app_framework/mcp_server.py`: servidor MCP con tres herramientas educativas.
+- `app_framework/agent_mcp.py`: cliente que descubre las herramientas y las pone a disposición del modelo.
+- `tests/test_mcp_tools.py`: pruebas de las funciones del servidor.
+- `tests/test_mcp_client_helpers.py`: pruebas de la conversión de esquemas y respuestas.
+
+## Herramientas disponibles
+
+1. `calculate`: calculadora aritmética limitada, sin ejecutar código Python arbitrario.
+2. `current_datetime`: devuelve fecha y hora local del equipo que ejecuta el servidor.
+3. `text_statistics`: cuenta caracteres, palabras y líneas de un texto.
+
+## Cómo ejecutar
+
+Instala las dependencias completas, incluido el SDK de MCP:
+
+```powershell
+python -m pip install -r requirements-production.txt
+python -m app_framework.agent_mcp
+```
+
+Ejemplos:
+- `¿Cuánto es 25 * 18?`
+- `¿Qué fecha y hora son ahora?`
+- `Cuenta las palabras de este texto: los agentes usan herramientas.`
+
+El cliente arranca el servidor como subproceso con transporte `stdio`, inicializa la sesión, consulta el catálogo de herramientas y traduce sus esquemas al formato de herramientas de OpenAI. Cuando el modelo solicita una función, el cliente envía la llamada al servidor MCP y devuelve el resultado a la conversación.
+
+El servidor puede parecer silencioso si se ejecuta directamente, ya que stdio se reserva para el protocolo. Normalmente se ejecuta desde el cliente.
+
+## Consideraciones de seguridad
+
+El cliente debe tratar las herramientas MCP como capacidades externas: comprobar los nombres disponibles, validar argumentos, limitar la cantidad de llamadas y no enviar datos sensibles sin una razón clara. En este ejemplo solo hay herramientas locales de cálculo, fecha/hora y estadísticas de texto.
+
+---
+
+# Proyecto 09 — Evaluación reproducible
+
+## ¿Por qué evaluar?
+
+Que un agente dé una respuesta convincente una vez no demuestra que funcione de forma consistente. Para mejorar un sistema necesitamos casos de prueba y criterios observables que podamos repetir después de modificar el código.
+
+Este proyecto evalúa el router del sistema multiagente con un pequeño conjunto de ejemplos etiquetados.
+
+## Ejecutar
+
+```powershell
+python -m app_framework.evaluation
+```
+
+La salida indica, para cada caso, la especialidad esperada, las especialidades detectadas y si el caso pasa. El comando termina con código cero si todos los casos pasan y con código distinto de cero si hay fallos, lo que permite usarlo en integración continua.
+
+## Qué mide y qué no mide
+
+Esta evaluación mide si el router selecciona la categoría esperada para esos ejemplos. No mide la verdad factual de una respuesta, la calidad de redacción, la seguridad completa del sistema ni la calidad de todas las decisiones de un LLM.
+
+Para una evaluación más madura convendría añadir:
+- ejemplos reales y casos límite;
+- criterios de exactitud y relevancia;
+- comprobación de citas y enlaces;
+- latencia y coste por petición;
+- pruebas de inyección de instrucciones;
+- comparación de versiones del prompt y del modelo;
+- revisión humana de una muestra de respuestas.
+
+Una métrica solo es útil si sabemos exactamente qué está midiendo y qué queda fuera.
+
+---
+
+# Proyecto final — API HTTP y contenedor
+
+## Objetivo
+
+Hasta ahora interactuamos con los agentes desde la terminal. Una API HTTP permite que otra aplicación —por ejemplo, una web o una app móvil— envíe un mensaje y reciba una respuesta mediante una petición HTTP.
+
+## Componentes
+
+- `app_framework/api.py`: endpoints HTTP con FastAPI.
+- `requirements-production.txt`: dependencias de la API y del contenedor.
+- `Dockerfile`: imagen basada en Python.
+- `docker-compose.yml`: ejecución local sencilla.
+- `.dockerignore`: excluye claves, datos y archivos de desarrollo del contexto de construcción.
+
+## Ejecutar sin Docker
+
+```powershell
+python -m pip install -r requirements-production.txt
+uvicorn app_framework.api:app --host 127.0.0.1 --port 8000
+```
+
+Endpoints:
+- `GET /health`: comprueba que el proceso HTTP responde.
+- `POST /v1/chat`: envía un mensaje al agente planificador.
+
+La documentación interactiva de FastAPI está disponible en `/docs` mientras el servicio se ejecuta.
+
+Ejemplo de cuerpo JSON:
+
+```json
+{
+  "message": "Calcula 125 * 8 y explica el resultado."
+}
+```
+
+## Ejecutar con Docker Compose
+
+Configura `.env` en tu máquina y ejecuta:
+
+```powershell
+docker compose up --build
+```
+
+El contenedor escucha en el puerto 8000. No se copia el archivo `.env` a la imagen; Docker Compose lo proporciona al arrancar el servicio.
+
+## Qué falta para producción real
+
+Este ejemplo demuestra el empaquetado y la interfaz HTTP, pero no equivale a un despliegue público listo para clientes. Antes de exponerlo a Internet, hay que implementar autenticación, límites de frecuencia y tamaño, cuotas y control de costes, logs sin secretos, monitorización, gestión de secretos del proveedor, actualizaciones de dependencias y pruebas de carga. También conviene ejecutar el servicio con permisos mínimos y definir qué datos se pueden enviar al modelo.
+
+No se ha desplegado automáticamente en un proveedor externo porque eso requiere una cuenta y credenciales del entorno de destino. El código permite probarlo localmente y sirve como base para un despliegue posterior.
