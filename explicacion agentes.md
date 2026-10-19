@@ -567,3 +567,68 @@ Yo defino herramienta y agente → el framework coordina la llamada y el resulta
 ```
 
 El framework no elimina la necesidad de diseñar buenas herramientas, instrucciones, permisos, pruebas y límites de seguridad.
+
+
+---
+
+# Agente 02 — Asistente con varias herramientas
+
+## Objetivo
+
+Este agente amplía el Agente 01B. En vez de tener solo una calculadora, dispone de varias herramientas y el modelo decide cuál usar para cada petición.
+
+## Herramientas disponibles
+
+- `calculate(expression)`: calcula una expresión matemática.
+- `current_datetime()`: consulta la fecha y hora local del equipo.
+- `save_note(title, content)`: guarda una nota en `data/notes.json`.
+- `list_notes()`: devuelve los títulos de las notas.
+- `get_note(title)`: recupera el contenido de una nota cuyo título coincida.
+
+## Archivos nuevos
+
+- `app_framework/agent_multi.py`: construye el agente y registra todas las herramientas.
+- `app_framework/tools_multi.py`: contiene las herramientas de fecha/hora y notas.
+- `tests/test_multi_tools.py`: pruebas para guardar, listar y recuperar notas.
+
+La calculadora se reutiliza desde `app_framework/tools.py`. El agente anterior `app_framework.agent` no se modifica, de modo que podemos seguir comparando los proyectos.
+
+## Ejecutar en Windows
+
+Desde la raíz del repositorio y con el entorno virtual activado:
+
+```powershell
+python -m app_framework.agent_multi
+```
+
+Prueba cada caso por separado:
+
+1. `¿Cuánto es 125 * 8?`
+2. `¿Qué fecha y hora son ahora?`
+3. `Guarda una nota titulada Ideas con el contenido: probar un agente con varias herramientas.`
+4. `Lista mis notas.`
+5. `Recupera la nota Ideas.`
+
+Para cerrar, escribe `salir`.
+
+## Cómo se guardan las notas
+
+Las notas se guardan en el archivo local `data/notes.json`. El archivo se crea automáticamente cuando se guarda la primera nota. Si se elimina, se perderán las notas guardadas en él. No guardes contraseñas, claves API ni datos sensibles.
+
+## Ejecutar las pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas de notas usan un directorio temporal, por lo que no deberían alterar tus notas reales.
+
+## Qué hemos aprendido
+
+1. Un agente puede disponer de varias herramientas a la vez.
+2. Las descripciones y los parámetros ayudan al modelo a elegir y llamar a la herramienta correcta.
+3. Las herramientas son funciones de Python; el framework coordina su invocación.
+4. El almacenamiento local es distinto de la memoria conversacional: guardar una nota no significa que el modelo la recuerde automáticamente, tiene que recuperarla con una herramienta.
+5. Hay que verificar el resultado de las herramientas y no afirmar que una operación se completó si falló.
+
+> Nota de desarrollo: los nuevos archivos se han añadido al repositorio, pero deben ejecutarse en tu equipo para confirmar que la versión instalada de Microsoft Agent Framework es compatible y que todas las pruebas pasan.
