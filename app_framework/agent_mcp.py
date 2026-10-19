@@ -79,9 +79,23 @@ async def run_agent(user_message: str) -> str:
                     tool_choice="auto" if schemas else "none",
                 )
                 assistant = response.choices[0].message
-                messages.append(assistant.model_dump(exclude_none=True))
                 if not assistant.tool_calls:
                     return assistant.content or "El modelo no devolvió texto."
+                messages.append({
+                    "role": "assistant",
+                    "content": assistant.content,
+                    "tool_calls": [
+                        {
+                            "id": call.id,
+                            "type": "function",
+                            "function": {
+                                "name": call.function.name,
+                                "arguments": call.function.arguments,
+                            },
+                        }
+                        for call in assistant.tool_calls
+                    ],
+                })
 
                 for call in assistant.tool_calls:
                     name = call.function.name
