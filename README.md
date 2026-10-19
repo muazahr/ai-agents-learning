@@ -11,7 +11,7 @@ Repositorio práctico para aprender a construir agentes de IA desde cero.
 - [x] Proyecto 04 — API meteorológica Open-Meteo (código añadido; pendiente de prueba local)
 - [x] Proyecto 05 — Búsqueda en Wikipedia (código añadido; pendiente de prueba local)
 - [x] Proyecto 06 — Planificación y coordinación de herramientas (código añadido; pendiente de prueba local)
-- [ ] Proyecto 07 — Sistema multiagente
+- [x] Proyecto 07 — Sistema multiagente con router y coordinador (código añadido; pendiente de prueba local)
 - [ ] Proyecto 08 — MCP
 - [ ] Proyecto 09 — Evaluación de agentes
 - [ ] Proyecto final — Despliegue en producción
@@ -144,3 +144,25 @@ Prueba:
 - `Calcula 125 * 8 y explica brevemente cómo has obtenido el resultado.`
 
 El agente debe consultar las herramientas correspondientes y distinguir los datos confirmados de las explicaciones. La planificación la realiza el modelo mediante instrucciones; este ejemplo no es un motor de planificación formal ni garantiza un plan perfecto.
+
+
+## Proyecto 07 — Sistema multiagente
+
+La aplicación utiliza un router sencillo para seleccionar especialistas de matemáticas, fecha/hora, meteorología e investigación. Los especialistas seleccionados trabajan en paralelo y un agente coordinador sintetiza sus respuestas.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_multiagent
+```
+
+Ejemplo:
+`Investiga la historia de Granada, dime qué tiempo hace y calcula 125 * 8.`
+
+El router usa reglas explícitas por palabras clave y expresiones matemáticas. Es una demostración didáctica, no un clasificador inteligente universal. Los agentes usan la API de OpenAI, por lo que las peticiones pueden generar costes.
+
+### Pruebas
+
+```powershell
+python -m pytest
+```
