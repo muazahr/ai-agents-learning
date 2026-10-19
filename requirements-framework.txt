@@ -1,3 +1,4 @@
 agent-framework-openai
 python-dotenv>=1.0.0
 pytest>=8.0.0
+mcp>=1.20,<2
