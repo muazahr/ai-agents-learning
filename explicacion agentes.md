@@ -757,3 +757,62 @@ python -m pytest
 ```
 
 Las pruebas de la herramienta meteorológica usan respuestas simuladas; no dependen de que el servicio externo esté disponible durante la prueba.
+
+
+---
+
+# Agente 05 — Búsqueda externa en Wikipedia
+
+## Objetivo
+
+Este agente puede buscar artículos en Wikipedia en español para obtener información que no debe inventar ni asumir que está actualizada en su entrenamiento.
+
+## Herramienta
+
+`search_wikipedia(query)` consulta el endpoint de búsqueda de la API REST de Wikipedia y devuelve hasta cinco resultados con título, descripción, extracto y enlace.
+
+La herramienta:
+- valida que la consulta no esté vacía y tenga una longitud razonable;
+- utiliza un timeout para no esperar indefinidamente;
+- limpia etiquetas HTML de los extractos;
+- comunica errores y búsquedas sin resultados;
+- devuelve enlaces para que el usuario pueda abrir las fuentes.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_web_search
+```
+
+Prueba:
+- `Investiga qué es la inteligencia artificial.`
+- `Busca artículos sobre la historia de Granada.`
+- `Encuentra información sobre el sistema solar.`
+
+## Limitaciones importantes
+
+Esta versión consulta **Wikipedia en español, no toda Internet**. No es un motor de búsqueda general ni garantiza que todos los resultados sean adecuados para cualquier pregunta. Para investigación profesional habría que ampliar las fuentes, validar fechas, comparar fuentes independientes y citar los enlaces utilizados.
+
+## Flujo
+
+```text
+Usuario formula una pregunta
+          ↓
+Agente decide que necesita buscar
+          ↓
+search_wikipedia(query)
+          ↓
+API REST de Wikipedia
+          ↓
+Títulos + extractos + enlaces
+          ↓
+Agente resume los resultados
+```
+
+## Pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas simulan la respuesta de la API y no necesitan conexión a Internet.
