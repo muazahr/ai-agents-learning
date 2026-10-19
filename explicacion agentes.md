@@ -424,3 +424,146 @@ Cada nuevo agente que construyamos debe responder a estas preguntas:
 10. ¿Cómo lo explicaríamos en una entrevista técnica?
 
 Este documento se actualizará con cada nuevo agente del repositorio.
+
+
+---
+
+# Agente 01B — El mismo agente usando Microsoft Agent Framework
+
+## 1. ¿Qué queremos comparar?
+
+En el Agente 01 escribimos manualmente el ciclo de tool calling: describimos la herramienta en un esquema, enviamos la petición al LLM, comprobamos si pidió una herramienta, ejecutamos la función y mandamos el resultado de vuelta al modelo.
+
+En esta versión usamos **Microsoft Agent Framework (MAF)**. El framework permite declarar el agente y sus herramientas en una forma más compacta y gestiona el ciclo de ejecución de herramientas.
+
+Documentación oficial: https://learn.microsoft.com/en-us/agent-framework/get-started/
+
+## 2. Archivos nuevos
+
+- `app_framework/agent.py`: crea y ejecuta el agente con MAF.
+- `app_framework/tools.py`: declara la calculadora como herramienta.
+- `requirements-framework.txt`: dependencias de esta variante.
+- `.env.framework.example`: variables de entorno de ejemplo.
+- `tests/test_framework_calculator.py`: pruebas básicas de la función de cálculo.
+
+La implementación original se mantiene intacta para poder comparar ambas versiones.
+
+## 3. Instalación y ejecución
+
+Desde la raíz del repositorio, activa tu entorno virtual y ejecuta:
+
+```bash
+pip install -r requirements-framework.txt
+```
+
+Copia `.env.framework.example` a `.env` y añade tu clave de API. No compartas la clave ni la subas al repositorio.
+
+Después ejecuta:
+
+```bash
+python -m app_framework.agent
+```
+
+Ejemplo:
+
+```text
+Tú: ¿Cuánto es 25 * 18?
+Agente: 25 multiplicado por 18 es 450.
+```
+
+El texto exacto puede variar según el modelo.
+
+## 4. ¿Qué hace `app_framework/agent.py`?
+
+### Cliente del modelo
+
+```python
+client = OpenAIChatClient(model=model, api_key=api_key)
+```
+
+El cliente conecta el framework con el modelo de OpenAI. La clave se lee de una variable de entorno.
+
+### Definición del agente
+
+```python
+return Agent(
+    client=client,
+    name="CalculadoraAgent",
+    instructions="...",
+    tools=[calculate],
+)
+```
+
+Aquí declaramos el cliente, el nombre, las instrucciones y las herramientas disponibles. No construimos manualmente el esquema JSON de la función.
+
+### Ejecución
+
+```python
+response = await agent.run(user_message)
+return response.text
+```
+
+El framework coordina la interacción con el modelo y la ejecución de la herramienta. La llamada es asíncrona, por eso usamos `async` y `await`.
+
+## 5. ¿Qué hace `app_framework/tools.py`?
+
+La función `calculate` contiene la lógica matemática. La anotación `@tool` declara que la función puede utilizarse como herramienta del agente. Su descripción y sus parámetros ayudan al framework a exponerla al modelo.
+
+La herramienta sigue siendo código Python normal: el framework no calcula por sí solo; invoca nuestra función cuando el modelo solicita utilizarla.
+
+> En este ejemplo educativo, la herramienta está configurada sin pedir aprobación. Para herramientas que modifican datos, envían mensajes, realizan compras o acceden a información sensible, debemos añadir controles y aprobaciones explícitas.
+
+## 6. Comparación línea por línea
+
+| Aspecto | Agente 01: manual | Agente 01B: con MAF |
+|---|---|---|
+| Cliente del modelo | `OpenAI(...)` | `OpenAIChatClient(...)` |
+| Definir herramienta | Esquema de herramienta escrito a mano | Función decorada con `@tool` |
+| Describir herramientas al LLM | Se pasa `TOOLS` en la petición | Se pasa `tools=[calculate]` al agente |
+| Ejecutar tool calls | Analizamos `tool_calls` y añadimos mensajes | El framework coordina la invocación |
+| Ciclo de conversación | Programado explícitamente | Abstraído por el framework |
+| Control y aprendizaje | Más detalles internos visibles | Menos código repetitivo |
+
+## 7. ¿Cuál es mejor?
+
+Ninguno gana siempre.
+
+- **Sin framework:** bueno para aprender el protocolo, depurar y controlar cada paso.
+- **Con framework:** útil cuando crecen las herramientas, los flujos, el estado y las integraciones.
+- **Coste del framework:** añade una dependencia y hay que aprender sus abstracciones; las APIs pueden cambiar entre versiones.
+
+La regla es entender primero qué hace el framework por nosotros. No debemos elegirlo solo porque tenga más funcionalidades.
+
+## 8. Preguntas de entrevista
+
+**¿Qué aporta un framework de agentes?**
+
+Reduce código repetitivo y ofrece abstracciones para configurar agentes, registrar herramientas y coordinar su ejecución.
+
+**¿El framework sustituye al LLM?**
+
+No. El LLM sigue interpretando la petición y decidiendo si necesita una herramienta. El framework coordina la aplicación y el ciclo de ejecución.
+
+**¿El framework ejecuta la calculadora por arte de magia?**
+
+No. Nosotros implementamos `calculate`; el framework la registra y se encarga de invocarla cuando corresponde.
+
+**¿Cuándo harías la implementación manual?**
+
+Para un flujo pequeño o cuando necesito control fino y quiero aprender cómo funciona el tool calling.
+
+**¿Cuándo usarías MAF?**
+
+Cuando me conviene su soporte para agentes, herramientas, sesiones, workflows e integraciones dentro de un sistema mayor.
+
+## 9. Resumen mental
+
+```text
+Agente manual:
+Yo defino herramienta → yo detecto la llamada → yo ejecuto → yo devuelvo resultado
+
+Agente con framework:
+Yo defino herramienta y agente → el framework coordina la llamada y el resultado
+```
+
+El framework no elimina la necesidad de diseñar buenas herramientas, instrucciones, permisos, pruebas y límites de seguridad.
