@@ -11,7 +11,7 @@ Repositorio práctico para aprender a construir agentes de IA desde cero.
 - [x] Proyecto 04 — API meteorológica Open-Meteo (código añadido; pendiente de prueba local)
 - [x] Proyecto 05 — Búsqueda en Wikipedia (código añadido; pendiente de prueba local)
 - [x] Proyecto 06 — Planificación y coordinación de herramientas (código añadido; pendiente de prueba local)
-- [x] Proyecto 07 — Sistema multiagente con router y coordinador (código añadido; pendiente de prueba local)
+- [x] Proyecto 07 — Sistema multiagente con router y coordinador (código añadido; pendiente de prueba local)\n- [x] Herramienta adicional — Agent Builder para crear esqueletos de nuevos agentes (código añadido; pendiente de prueba local)
 - [ ] Proyecto 08 — MCP
 - [ ] Proyecto 09 — Evaluación de agentes
 - [ ] Proyecto final — Despliegue en producción
@@ -160,6 +160,25 @@ Ejemplo:
 `Investiga la historia de Granada, dime qué tiempo hace y calcula 125 * 8.`
 
 El router usa reglas explícitas por palabras clave y expresiones matemáticas. Es una demostración didáctica, no un clasificador inteligente universal. Los agentes usan la API de OpenAI, por lo que las peticiones pueden generar costes.
+
+### Pruebas
+
+```powershell
+python -m pytest
+```
+
+
+## Herramienta adicional — Agent Builder
+
+Agent Builder crea una nueva carpeta con `agent.py`, `README.md` y `__init__.py` a partir del nombre, objetivo e instrucciones que introduzcas. Valida el nombre de la carpeta, comprueba que el código generado sea sintácticamente válido y no sobrescribe proyectos existentes.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_builder
+```
+
+El generador crea esqueletos sin herramientas personalizadas; puedes ampliarlos después. Configura la clave de OpenAI en el `.env` local. Los proyectos generados son código fuente y no se ejecutan automáticamente al crearlos.
 
 ### Pruebas
 
