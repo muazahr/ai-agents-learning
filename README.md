@@ -9,7 +9,7 @@ Repositorio práctico para aprender a construir agentes de IA desde cero.
 - [x] Proyecto 02 — Agente con varias herramientas (código añadido; pendiente de prueba local)
 - [x] Proyecto 03 — Memoria local persistente (código añadido; pendiente de prueba local)
 - [x] Proyecto 04 — API meteorológica Open-Meteo (código añadido; pendiente de prueba local)
-- [ ] Proyecto 05 — Búsqueda web
+- [x] Proyecto 05 — Búsqueda en Wikipedia (código añadido; pendiente de prueba local)
 - [ ] Proyecto 06 — Planificación y autonomía
 - [ ] Proyecto 07 — Sistema multiagente
 - [ ] Proyecto 08 — MCP
@@ -99,6 +99,30 @@ Ejemplo: `¿Qué tiempo hace en Granada, España?`
 La herramienta consulta datos actuales y previsión diaria, establece un timeout y devuelve un mensaje de error si la API no está disponible. Los datos meteorológicos son orientativos y pueden cambiar.
 
 ## Pruebas de los proyectos 03 y 04
+
+```powershell
+python -m pytest
+```
+
+
+## Proyecto 05 — Búsqueda en Wikipedia
+
+El agente busca artículos en Wikipedia en español mediante su API REST y devuelve títulos, descripciones, extractos y enlaces. Es un ejemplo de búsqueda externa acotada: no consulta toda Internet.
+
+### Ejecutar
+
+```powershell
+python -m app_framework.agent_web_search
+```
+
+Ejemplos:
+- `Investiga qué es la inteligencia artificial.`
+- `Busca información sobre la arquitectura de computadores.`
+- `Encuentra artículos sobre la historia de Granada.`
+
+La herramienta no necesita una clave de Wikipedia. La aplicación sigue necesitando la clave de OpenAI en `.env`.
+
+### Pruebas
 
 ```powershell
 python -m pytest
