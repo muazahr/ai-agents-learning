@@ -865,3 +865,73 @@ En sistemas de producción se deberían añadir límites de pasos, presupuestos,
 ```powershell
 python -m pytest
 ```
+
+
+---
+
+# Agente 07 — Sistema multiagente
+
+## Objetivo
+
+En vez de que un único agente resuelva toda la tarea, este proyecto divide el trabajo entre especialistas y utiliza un coordinador para unir los resultados.
+
+## Arquitectura
+
+```text
+Petición del usuario
+        ↓
+Router por reglas
+        ↓
+ ┌──────┼────────┬─────────┐
+ Matemáticas  Fecha/hora  Meteorología  Investigación
+ └──────┼────────┴─────────┘
+        ↓ resultados
+  Coordinador multiagente
+        ↓
+  Respuesta final
+```
+
+## Especialistas
+
+- **Matemáticas:** utiliza `calculate`.
+- **Fecha y hora:** utiliza `current_datetime`.
+- **Meteorología:** utiliza `get_weather`.
+- **Investigación:** utiliza `search_wikipedia`.
+
+Si una petición necesita más de una especialidad, los especialistas seleccionados se ejecutan en paralelo. Después, el coordinador recibe sus resultados y prepara una respuesta conjunta.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_multiagent
+```
+
+Prueba:
+- `Investiga la historia de Granada, dime qué tiempo hace y calcula 125 * 8.`
+- `¿Qué hora es y qué tiempo hace en Madrid?`
+- `Busca información sobre inteligencia artificial y resume los resultados.`
+
+## Router didáctico
+
+El router utiliza palabras clave y una expresión regular para decidir qué especialistas activar. Es una solución sencilla, transparente y fácil de probar, pero puede equivocarse con formulaciones inesperadas. En una versión posterior podríamos sustituirlo por un router basado en un LLM o un workflow formal.
+
+## Coordinador
+
+El coordinador recibe:
+- la petición original;
+- la salida de cada especialista;
+- los errores que hayan ocurrido.
+
+Su función es sintetizar, no inventar información. Si un especialista falla, la salida debe reflejarlo.
+
+## Coste y límites
+
+Una petición puede generar varias llamadas al modelo, por lo que puede costar más que usar un único agente. Los especialistas se ejecutan en paralelo para reducir latencia cuando sus tareas son independientes. Para producción conviene añadir límites de concurrencia, presupuesto, timeout global, trazas y evaluación de la calidad del coordinador.
+
+## Pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas verifican las reglas del router sin realizar llamadas a la API de OpenAI ni a servicios externos.
