@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ai-agents-learning-api
+    runtime: docker
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_CHAT_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
