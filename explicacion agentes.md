@@ -632,3 +632,128 @@ Las pruebas de notas usan un directorio temporal, por lo que no deberían altera
 5. Hay que verificar el resultado de las herramientas y no afirmar que una operación se completó si falló.
 
 > Nota de desarrollo: los nuevos archivos se han añadido al repositorio, pero deben ejecutarse en tu equipo para confirmar que la versión instalada de Microsoft Agent Framework es compatible y que todas las pruebas pasan.
+
+
+---
+
+# Agente 03 — Memoria local persistente
+
+## Objetivo
+
+El Agente 03 introduce una memoria explícita que sobrevive al cierre del programa. A diferencia del historial temporal de un chat, esta memoria se almacena en `data/memory.json` y el agente accede a ella mediante herramientas.
+
+## Herramientas
+
+- `remember_fact(category, fact)`: guarda un dato cuando el usuario lo pide explícitamente.
+- `search_memory(query)`: busca por texto en categoría o dato.
+- `list_memories()`: muestra los recuerdos guardados con sus IDs.
+- `forget_memory(memory_id)`: borra un recuerdo concreto por su ID.
+
+## Flujo
+
+```text
+Usuario pide recordar un dato
+          ↓
+LLM decide llamar remember_fact
+          ↓
+Python valida y guarda el dato en JSON
+          ↓
+La herramienta devuelve el ID
+          ↓
+El agente confirma el resultado
+```
+
+Para recordar algo en una ejecución posterior, el agente debe llamar a `search_memory` o `list_memories`. El modelo no obtiene automáticamente el contenido del archivo.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_memory
+```
+
+Prueba:
+1. `Recuerda que estoy aprendiendo Python.`
+2. Cierra el programa con `salir`.
+3. Vuelve a ejecutarlo.
+4. Pregunta `¿Qué recuerdas sobre Python?`
+5. Prueba `Lista mis recuerdos`.
+6. Para borrar un dato, identifica su ID y pide que lo elimine.
+
+## Privacidad y límites
+
+- Solo se deben guardar datos no sensibles y cuando el usuario lo solicita expresamente.
+- No guardes contraseñas, claves API, información de salud ni otros datos sensibles.
+- La memoria es local a la carpeta desde la que se ejecuta el programa.
+- El usuario puede inspeccionar o borrar el archivo `data/memory.json` manualmente.
+- En una aplicación real convendría añadir cifrado, permisos, control de acceso, auditoría y una política de retención.
+
+## Pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas usan archivos temporales y no deben modificar los recuerdos reales.
+
+---
+
+# Agente 04 — Integración con una API meteorológica
+
+## Objetivo
+
+Conectar el agente con un servicio externo para obtener datos que el modelo no debería inventar ni confiar en recordar. Usamos Open-Meteo, que ofrece geocodificación y previsiones sin requerir una clave de API meteorológica para este ejemplo.
+
+## Herramienta
+
+`get_weather(city)` realiza dos solicitudes:
+1. Busca las coordenadas de la ciudad mediante la API de geocodificación.
+2. Consulta el tiempo actual y la previsión diaria para esas coordenadas.
+
+La función utiliza un timeout, valida que existan resultados y maneja errores de red o respuestas no válidas.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_weather
+```
+
+Prueba:
+- `¿Qué tiempo hace en Granada, España?`
+- `Dime la temperatura y la máxima prevista para Madrid.`
+- `Consulta el tiempo en una ciudad que no exista.`
+
+La herramienta devuelve el dato recibido de Open-Meteo y una nota indicando que la previsión puede cambiar. La respuesta exacta depende de los datos disponibles en el momento de la consulta.
+
+## Arquitectura
+
+```text
+Usuario
+  ↓
+Agente (LLM)
+  ↓ decide usar get_weather
+Herramienta Python
+  ↓
+Geocodificación Open-Meteo
+  ↓ coordenadas
+API de previsión Open-Meteo
+  ↓
+Datos meteorológicos
+  ↓
+Agente explica el resultado
+```
+
+## Qué aprendemos
+
+- Cómo una herramienta consulta una API HTTP externa.
+- Cómo convertir una ciudad en coordenadas.
+- Cómo interpretar JSON y validar campos.
+- Cómo gestionar errores de red y timeouts.
+- Por qué los datos actuales deben consultarse y no inventarse.
+
+## Pruebas
+
+```powershell
+python -m pytest
+```
+
+Las pruebas de la herramienta meteorológica usan respuestas simuladas; no dependen de que el servicio externo esté disponible durante la prueba.
