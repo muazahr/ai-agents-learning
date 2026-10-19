@@ -816,3 +816,52 @@ python -m pytest
 ```
 
 Las pruebas simulan la respuesta de la API y no necesitan conexión a Internet.
+
+
+---
+
+# Agente 06 — Planificación y coordinación de herramientas
+
+## Objetivo
+
+El Agente 06 recibe un objetivo que puede necesitar varias operaciones y debe organizar los pasos en un orden lógico. Combina herramientas ya construidas para practicar la coordinación de capacidades.
+
+## Herramientas disponibles
+
+- `calculate`: operaciones matemáticas.
+- `current_datetime`: fecha y hora local.
+- `get_weather`: consulta meteorológica con Open-Meteo.
+- `search_wikipedia`: búsqueda de artículos en Wikipedia en español.
+
+No incluye herramientas que escriban archivos ni realicen acciones externas. Esta restricción permite aprender coordinación con menor riesgo.
+
+## Ejecutar en Windows
+
+```powershell
+python -m app_framework.agent_planner
+```
+
+Prueba:
+- `Prepara un resumen con la fecha actual, el tiempo en Granada y dos datos sobre la historia de Granada.`
+- `Calcula 125 * 8 y explica el resultado.`
+- `Investiga un tema y resume los principales resultados con enlaces.`
+
+## Qué hace el planificador
+
+1. Identifica el objetivo del usuario.
+2. Decide si hacen falta varios pasos.
+3. Selecciona las herramientas que aportan información real.
+4. Ejecuta las consultas necesarias.
+5. Resume los resultados y explica cualquier limitación.
+
+## Importante: planificación no significa autonomía ilimitada
+
+Este ejemplo utiliza instrucciones para que el modelo planifique y coordine herramientas dentro de una única ejecución. No implementa un planificador formal, un bucle de reintentos ilimitado ni una verificación matemática de cada paso. Tampoco puede actuar sobre sistemas externos.
+
+En sistemas de producción se deberían añadir límites de pasos, presupuestos, tiempos máximos, validación de resultados, registros y aprobación humana antes de acciones con consecuencias.
+
+## Prueba general
+
+```powershell
+python -m pytest
+```
