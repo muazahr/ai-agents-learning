@@ -247,6 +247,19 @@ docker compose up --build
 
 La API escucha en el puerto 8000. Este contenedor es una base de despliegue para aprendizaje, no una solución lista para exponer públicamente sin más trabajo. Antes de publicarlo, añade autenticación, límites de uso, control de costes, monitorización, gestión de secretos y políticas de acceso adecuadas.
 
+
+### Despliegue guiado en Render
+
+El repositorio incluye también `render.yaml` para usar el Dockerfile desde un servicio de Render:
+
+1. Sube los cambios al repositorio de GitHub.
+2. En Render, crea un **Blueprint** y conecta este repositorio.
+3. Revisa la configuración detectada en `render.yaml`.
+4. Introduce `OPENAI_API_KEY` en el panel de secretos de Render; no la escribas en el YAML ni en GitHub.
+5. Espera a que termine la construcción y comprueba `/health` en la URL que te proporcione Render.
+
+El archivo solo define la configuración del servicio: no crea una cuenta, no introduce secretos ni despliega por sí solo. Antes de compartir la URL, añade autenticación y límites de uso a la API. Revisa también las condiciones y el coste del proveedor elegido.
+
 ## Ejecutar las pruebas
 
 Para ejecutar todas las pruebas locales:
